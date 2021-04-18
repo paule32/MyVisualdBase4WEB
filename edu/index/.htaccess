@@ -1,0 +1,7 @@
+# -------------------------------------------
+# Apache2.4 config file
+# (c) 13.03.2021 J. Kallup - paule32
+# -------------------------------------------
+
+RewriteEngine on
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]

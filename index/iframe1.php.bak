@@ -1,0 +1,43 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <meta name="author" content="Jens Kallup [paule32]">
+    <meta name="copyright" content="Jens Kallup">
+    <meta name="keywords" content="kallup, css, html, theme, desktop, windows, xp">
+    <meta name="description" content="A Windows XP desktop in HTML, CSS and JavaScript">
+    <meta name="robots" content="index,follow">
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="cache-control" content="max-age=0">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="pragma" content="no-cache">
+
+    <title>RAD - Rapid Application Development</title>
+
+    <link rel="stylesheet" type="text/css" href="/tools/web/css/global.css.gz">
+    <link rel="stylesheet" type="text/css" href="/index/css/global.css.gz">
+
+    <script language="javascript" type="text/javascript" src="/tools/web/js/jquery/base/jquery-min.1.12.4.js.gz"></script>
+
+</head>
+<frameset cols='0px,*,0px' allowfullscreen border='0' frameborder='0' framespacing='0' scrolling="no" noresize>
+<frame src='frame.php'       allowfullscreen name='links' marginwidth='0' marginheight='0' scrolling='no' noresize>
+<frameset rows='0px,*,0px' allowfullscreen border='0' frameborder='0' framespacing='0'>
+
+<frame src='frame.php'  allowfullscreen name='oben'  marginwidth='0' marginheight='0' scrolling='no' noresize>
+<frame src='iframe2.php' allowfullscreen name='main'  marginwidth='0' marginheight='0' scrolling='no' noresize>
+<frame src='frame.php'  allowfullscreen name='unten' marginwidth='0' marginheight='0' scrolling='no' noresize>
+
+</frameset>
+<frame src='frame.php' allowfullscreen name='rechts' marginwidth='0' marginheight='0' scrolling='no' noresize>
+
+<noframes allowfullscreen>
+<body allowfullscreen>
+Leider unterstützt Ihr Browser keine FrameSet's
+</body>
+</noframes>
+
+</frameset>
+</html>

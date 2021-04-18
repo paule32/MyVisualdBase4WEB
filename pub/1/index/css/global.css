@@ -1,0 +1,111 @@
+iframe
+{
+  overflow-x:hidden;
+  overflow-Y:hidden;
+}
+
+#BannerText {
+    position:absolute;
+    border: solid 5px gray;
+    border-radius:10px;
+    text-align:center;
+    letter-spacing: 0.5em;
+    font-size:16pt;
+    font-weight:bold;
+    width:800px;
+    height:42px;
+    top:50px;
+    left:50%;
+    line-height:42px;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+}
+#CenterBannerBox {
+    position:absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+}
+.choosenbox {
+    background-repeat: no-repeat;
+    background-size:90% auto;
+    width: 700px;
+    height:80px;
+}
+.selectbox {
+    background-repeat: no-repeat;
+    background-size:90% auto;
+    background-position: center center;
+    border: solid 5px gray;
+    border-radius:10px;
+    width:300px;
+    height:100px;
+    float:left;
+    margin: 0 auto;
+}
+.vspacer {
+    height:32px;
+}
+.cbox {
+    background-repeat: no-repeat;
+    width:150px;
+    height:100px;
+    float:left;
+}
+
+amigaos { background-image: url(/applications/web_amiga/index/img/logo.png); }
+amigaos:hover { cursor: pointer; }
+
+hpc64os { background-image: url(/applications/web_hpc64/index/img/logo.jpg); }
+hpc64os:hover { cursor: pointer; }
+
+linuxos { background-image: url(/applications/web_linux/index/img/logo.png); }
+linuxos:hover { cursor: pointer; }
+
+msdosos { background-image: url(/applications/web_msdos/index/img/logo.png); }
+msdosos:hover { cursor: pointer; }
+
+mswinos {
+    background-image: url(/applications/web_mswin/index/img/logo.png);
+    background-size: contain;
+}
+mswinos:hover { cursor: pointer; }
+
+.LHand_1 { background-image: url(/index/img/handR.png); display:none; }
+.LHand_2 { background-image: url(/index/img/handR.png); display:none; }
+.LHand_3 { background-image: url(/index/img/handR.png); display:none; }
+.LHand_4 { background-image: url(/index/img/handR.png); display:none; }
+
+.show-next-on-hover + * {
+    display: none;
+}
+
+.show-next-on-hover:hover + * {
+    display: initial;
+}
+
+#screen-element:-webkit-full-screen {
+	width: 100%;
+	height: 100%;
+	background-color: pink;
+	margin: 0;
+}
+
+#screen-element:-moz-full-screen {
+	background-color: pink;
+	margin: 0;
+}
+
+#screen-element:-ms-fullscreen {
+	background-color: pink;
+	margin: 0;
+	height: 100%;
+}
+
+/* W3C proposal that will eventually come in all browsers */
+#screen-element:fullscreen { 
+	background-color: pink;
+	margin: 0;
+	height: 100%;
+}
