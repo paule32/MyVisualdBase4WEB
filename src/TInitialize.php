@@ -6,64 +6,16 @@
 // License : (c) kallup.net - non-profit - 2021
 // -----------------------------------------------------
 
-function invoke_workfiles()
-{
-	$workfiles = array(
-		"TAndroid",
-		"TApplication",
-		"TBackground",
-		"TButton",
-		"TColor",
-		"TControl",
-		"TDesktopIcon",
-		"TDesktopWindow",
-		"TDevice",
-		"TException",
-		"TImage",
-		"TLocales",
-		"TMarginRect",
-		"TObject",
-		"TPaddingRect",
-		"TPaintDevice",
-		"TPainterScreen",
-		"TPrinter",
-		"TRect",
-		"TScreen",
-		"TString",
-		"TTablet",
-		"TTaskBar",
-		"TUrl",
-		"TUtils",
-		"TVisualRect",
-		"TWidget",
-		"TWindow"
-	);
-
-	// invoke file's ...
-	echo "<script>\n";
-	$reqn = "required file: ";
-	
-	spl_autoload_extensions('.php,.inc');
-	foreach ($workfiles as $workfile)
-	{
-		$file = file_build_path( __DIR__ , "..", "src", $workfile . ".php");
-		if (file_exists($file)) {
-			spl_autoload($file);
-			echo ""
-			. "console.info('"
-			. $reqn
-			. $file
-			. " load ok.');\n";
-		}	else {
-			echo ""
-			. "console.error('"
-			. $reqn
-			. $file
-			. " not found.');";
-		}
-	}
-	echo "</script>";
-}
+require_once( "TObject.php" );
+require_once( "TRect.php" );
+require_once( "TMarginRect.php" );
+require_once( "TPaddingRect.php" );
+require_once( "TVisualRect.php" );
+require_once( "TPainterScreen.php" );
+require_once( "TColor.php" );
+require_once( "TPaintDevice.php" );
+require_once( "TDevice.php" );
+require_once( "TScreen.php" );
 
 // -----------------------------------------------
 // RegisterClass: register classes to be in use
@@ -107,8 +59,6 @@ function InitializeFrameWork()
 		"TWindow",			// window
 		"TButton",			// window: button
 	]);
-	
-	invoke_workfiles();
 }
 
 // -------------------------------------

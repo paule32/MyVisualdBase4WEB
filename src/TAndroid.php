@@ -6,5 +6,8 @@
 // License : (c) kallup.net - non-profit - 2021
 // -----------------------------------------------------
 
+declare(strict_types=1);
+namespace paule32\dBase4WEB
+
 class TAndroid extends TDevice { }
 ?>
