@@ -1,0 +1,43 @@
+<?php
+// ------------------------------------------------------
+// File    : src/TPaintDevice.php
+//
+// Autor   : Jens Kallup <kallup.jens@web.de> - paule32
+// License : (c) kallup.net - non-profit - 2021
+// -----------------------------------------------------
+
+class TPaintDevice extends TObject
+{
+	public $Screen  = null; 	// visual screen
+	public $Printer = null; 	// printer
+	
+	public function __construct() {
+		$cnt = func_num_args();
+		if ($cnt == 1) {
+			list($sender) = func_get_args();
+			parent::__construct($sender);
+
+			if ($sender instanceof TScreen) {
+				$this->Screen = $sender;
+			}
+			
+			$this->setClassName   ("TPaintDevice");
+			$this->setClassID     ("qpaintdevice");
+			$this->setClassHandle ($sender->getClassHandle()+1);
+		}
+	}
+	
+	public function EmitCode($a1) {
+		$str = "";
+		if (!empty($this->Screen)) {
+			$str = $this->Screen->EmitCode($this->getClassID() . $this->getClassHandle());
+		}
+		return $str;
+	}
+	
+	// dtor: free used memory ...
+	public function __destruct() {
+		parent::__destruct();
+	}
+}
+?>
