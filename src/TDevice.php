@@ -7,7 +7,7 @@
 // -----------------------------------------------------
 
 class TDevice extends TPaintDevice
-{
+{	
 	// ctor: constructor
 	public function __construct() {
 		$cnt = func_num_args();
@@ -18,6 +18,8 @@ class TDevice extends TPaintDevice
 			$this->setClassName   ("TDevice");
 			$this->setClassID     ("qdevice");
 			$this->setClassHandle ($sender->getClassHandle()+1);
+			
+			$this->setParent($sender);
 		}
 	}
 
@@ -25,6 +27,7 @@ class TDevice extends TPaintDevice
 	// perform code emit to parent DIV: $a1
 	// --------------------------------------------
 	public function EmitCode($a1) {
+		echo "ooooo  " . $a1 . " ooooo";
 		// jquery
 		$_SESSION['document_stream'] .= "$('#"
 		. $this->getClassID()

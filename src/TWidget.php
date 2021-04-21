@@ -8,121 +8,231 @@
 
 class TWidget extends TObject
 {
-	public $ClassName  = "TPanWindow";
-	public $ClassLHS   = "";
-	public $ClassRHS   = "";
+	public $MarginRect  = null;
+	public $VisualRect  = null;
+	public $PaddingRect = null;
 	
-	public $Layout = null;
-	
-	public $uiText = "";
-	public $Number =  0;
+	public $internalParent = null;
 
-	public $Background = null;
-	public $rect       = null;	// window size
+	public $Brush  = null;
 	
-	protected $init_layout = 0;
-
 	// --------------------------------------------
 	// this is the real ctor, it call the fake ctor
 	// --------------------------------------------
 	public function __construct() {
 		$cnt = func_num_args();
-		$this->rect = new TRect();
+		parent::__construct($this);
+		
+		$this->setClassName("TWidget");
+		$this->setClassID("qwidget");
+		$this->setClassHandle($this->getClassHandle()+1);
+
+		$this->MarginRect  = new TMarginRect(0,0,0,0);
+		$this->PaddingRect = new TPaddingRect(0,0,0,0);
+
+		$this->MarginRect->setParent($this);
+		
+		$this->Brush = new TPainterScreen($this);
+
+		// default values:
 		if ($cnt == 0) {
-			$this->Parent = new TObject($this);
+			$this->VisualRect = new TVisualRect(2,1,"100vw","100vh");
 		}	else
 		if ($cnt == 2) {
-			list($wc,$sender) = func_get_args();
-			$this->Parent = $sender;
-			
-			if ($wc instanceof TDesktopWindow) {
-				$this->ClassLHS = "qdesktop";
-				$this->ClassRHS = "qscreen";
-				$this->uiText   = "qscreen";
+			list($w,$h) = func_get_args();
+			$this->VisualRect = new TVisualRect(0,0,$w,$h);
+		}	else
+		if ($cnt == 1) {
+			list($a1) = func_get_args();
+			$this->setParent($a1);
+			if ($a1 instanceof TRect) {
+				$this->VisualRect = new TRect(
+				$a1->getLeft  (),
+				$a1->getTop   (),
+				$a1->getRight (),
+				$a1->getBottom());
 			}	else
-			if ($wc instanceof TTaskBar) {
-				$this->ClassLHS = "qtaskbar";
-				$this->ClassRHS = "qscreen";
-				$this->uiText   = "qscreen";
+			if ($a1 instanceof TScreen) {
+				$this->VisualRect = new TVisualRect(0,0,"100vw","100vh");
+			}
+		}
+	}
+
+	public function getMarginBottom () { return $this->MarginRect->getBottom(); }
+	public function getMarginLeft   () { return $this->MarginRect->getLeft  (); }
+	public function getMarginRight  () { return $this->MarginRect->getRight (); }
+	public function getMarginTop    () { return $this->MarginRect->getTop   (); }
+
+    public function getPaddingBottom () { return $this->PaddingRect->getBottom(); }
+	public function getPaddingLeft   () { return $this->PaddingRect->getLeft  (); }
+	public function getPaddingRight  () { return $this->PaddingRect->getRight (); }
+	public function getPaddingTop    () { return $this->PaddingRect->getTop   (); }
+	
+	public function getVisualBottom () { return $this->VisualRect->getBottom(); }
+	public function getVisualLeft   () { return $this->VisualRect->getLeft  (); }
+	public function getVisualRight  () { return $this->VisualRect->getRight (); }
+	public function getVisualTop    () { return $this->VisualRect->getTop   (); }
+	
+	public function setMarginBottom ($a1) { $this->MarginRect->setBottom($a1); }
+	public function setMarginLeft   ($a1) { $this->MarginRect->setLeft  ($a1); }
+	public function setMarginRight  ($a1) { $this->MarginRect->setRight ($a1); }
+	public function setMarginTop    ($a1) { $this->MarginRect->setTop   ($a1); }
+	
+	public function setPaddingBottom ($a1) { $this->PaddingRect->setBottom($a1); }
+	public function setPaddingLeft   ($a1) { $this->PaddingRect->setLeft  ($a1); }
+	public function setPaddingRight  ($a1) { $this->PaddingRect->setRight ($a1); }
+	public function setPaddingTop    ($a1) { $this->PaddingRect->setTop   ($a1); }
+	
+	public function setVisualBottom ($a1) { $this->VisualRect->setBottom($a1); }
+	public function setVisualLeft   ($a1) { $this->VisualRect->setLeft  ($a1); }
+	public function setVisualRight  ($a1) { $this->VisualRect->setRight ($a1); }
+	public function setVisualTop    ($a1) { $this->VisualRect->setTop   ($a1); }
+
+	public function setColor() {
+		$cnt = func_num_args();
+		if ($cnt == 0) {
+			$this->Brush->setColor(10,100,200);
+		}	else
+		if ($cnt == 1) {
+			list($a1) = func_get_args();
+			$this->Brush->setColor($a1);
+		}	else
+		if ($cnt == 3) {
+			list($a1,$a2,$a3) = func_get_args();
+			$this->Brush->setColor($a1,$a2,$a3);
+		}
+	}
+	
+	public function getMargin() { return $this->Brush->MarginRect; }
+	public function setMargin() {
+		$cnt = func_num_args();
+		if ($cnt == 4) {
+			list($a1,$a2,$a3,$a4) = func_get_args();
+			if (is_int($a1) && is_int($a2)
+			&&  is_int($a3) && is_int($a4)) {
+				$_SESSION['document_stream'] .= "$('#"
+				. $this->getClassID()
+				. $this->getClassHandle()  . "')"
+				. ".css('margin-left','"   . $a1 . "px')"
+				. ".css('margin-top','"    . $a2 . "px')"
+				. ".css('margin-right','"  . $a3 . "px')"
+				. ".css('margin-bottom','" . $a4 . "px');";
+				$this->setMarginLeft  ($a1);
+				$this->setMarginTop   ($a2);
+				$this->setMarginRight ($a3);
+				$this->setMarginBottom($a4);
 			}	else
-			if ($wc instanceof TButton) {
-				$this->ClassLHS = "qbutton";
-				//$this->uiText   = "----------------" . $sender->uiText;
-			}	else
-			if ($wc instanceof TWindow) {
-				$this->ClassLHS = "qwindow";
-				$this->uiText   = "window";
-			} else
-			if ($wc instanceof TPanel ) {
-				$this->ClassLHS = "qpanel";
-				$this->uiText   = "panel";
-			} else
-			if ($wc instanceof TScreen) {
-				$this->ClassLHS = "qscreen";
-				$this->uiText   = "screen";
+			if (is_string($a1) && is_string($a2)
+			&&  is_string($a3) && is_string($a4)) {
+				$_SESSION['document_stream'] .= "$('#"
+				. $this->getClassID()
+				. $this->getClassHandle()  . "')"
+				. ".css('margin-left','"   . $a1 . "')"
+				. ".css('margin-top','"    . $a2 . "')"
+				. ".css('margin-right','"  . $a3 . "')"
+				. ".css('margin-bottom','" . $a4 . "');";
+				$this->setMarginLeft  ($a1);
+				$this->setMarginTop   ($a2);
+				$this->setMarginRight ($a3);
+				$this->setMarginBottom($a4);
 			}
 		}
 	}
 	
-	public function EmitCode($sender)
-	{			
-		// check, if panel div exist's
-		$num = 0;
-		/*
-		while (1) {
-			$str = $this->ClassLHS . $num++;
-			if (!in_array($str, $this::$Controls)) {
-				$this->Number = $num;
-				array_push($this::$Controls,$str);
-				break;
+	public function getPadding() { return $this->Foreground->PaddingRect; }
+	public function setPadding() {
+		$cnt = func_num_args();
+		if ($cnt == 4) {
+			list($a1,$a2,$a3,$a4) = func_get_args();
+			if (is_int($a1) && is_int($a2)
+			&&  is_int($a3) && is_int($a4)) {
+				$_SESSION['document_stream'] .= "$('#"
+				. $this->getClassID()
+				. $this->getClassHandle()  . "')"
+				. ".css('padding-left','"   . $a1 . "px')"
+				. ".css('padding-top','"    . $a2 . "px')"
+				. ".css('padding-right','"  . $a3 . "px')"
+				. ".css('padding-bottom','" . $a4 . "px');";
+				$this->setPaddingLeft  ($a1);
+				$this->setPaddingTop   ($a2);
+				$this->setPaddingRight ($a3);
+				$this->setPaddingBottom($a4);
+			}	else
+			if (is_string($a1) && is_string($a2)
+			&&  is_string($a3) && is_string($a4)) {
+				$_SESSION['document_stream'] .= "$('#"
+				. $this->getClassID()
+				. $this->getClassHandle()  . "')"
+				. ".css('padding-left','"   . $a1 . "')"
+				. ".css('padding-top','"    . $a2 . "')"
+				. ".css('padding-right','"  . $a3 . "')"
+				. ".css('padding-bottom','" . $a4 . "');";
+				$this->setPaddingLeft  ($a1);
+				$this->setPaddingTop   ($a2);
+				$this->setPaddingRight ($a3);
+				$this->setPaddingBottom($a4);
 			}
-		}*/
-			
-		$_SESSION['document_stream'] .= ""
-		. "$('#"
-		. $this->ClassLHS . $num
-		. "').appendTo($('#"
-		. $sender->uiText
-		. $sender->Number
-		. "'));";
+		}
+	}
 
-		echo ""
-		. "<div class='easyui-" . $this->uiText
-		. "' id='"              . $this->ClassLHS . $num
-		. "' style='position:relative;overflow:auto;"
-		. "width:100px;height:50px;'></div>";
-			
-
-			// check, if panel div exist's
-/*			$num = 0;
-			while (1) {
-				$str = "wipa" . $num;
-				if (!in_array($str, $this::$idArray)) {
-					array_push($this::$idArray, $str);
-					break;
-				}
-				$num++;
-			}
-			if (($num-1) < 1) {
-				echo ""
-				. "<div id=\"wipa" . ($num-1)
-				. "\" class=\"easyui-window\" title=\"Basic Window\" data-options=\""
-				. "inline:'true',iconCls:'icon-save'\" "
-				. "style=\"width:500px;height:400px;padding:0px;"
-				. "\"></div>";
-				
-				$_SESSION['document_stream'] .= ""
-				//. "$('#wipa" . ($num-1) . "').appendTo($('#qdesktop1'));"
-				. "$('#wipa" . ($num-1) . "').panel('hide');";
-			}*/
+	public function getPosition() { return $this->Position; }
+	public function setPosition($a1) {
+		if (!is_string($a1)) {
+			// todo: error msg.
+			return;
+		}
+		$tmp = strtolower($a1);
+		if ((!strcmp($tmp,"absolute"))
+		||  (!strcmp($tmp,"relative"))
+		||  (!strcmp($tmp,"fixed"   ))) {
+			$_SESSION['document_stream'] .= "$('#"
+			. $this->getClassID()
+			. $this->getClassHandle()
+			. "').css('position','" . $tmp . "');";
+			$this->Position = $tmp;
+		}	else {
+			// todo: error msg.
+		}
 	}
 	
-	// ------------------------------------------
-	// get the PARENT of given argument.
-	// not given - the object PARENT will return 
-	// ------------------------------------------
-	public function getParent() {
-		return $this->Parent;
+	public function setAbsolute() { $this->setPosition("absolute"); }
+	public function setRelative() { $this->setPosition("relative"); }
+	public function setFixed   () { $this->setPosition("fixed"   ); }
+
+	public function setImage() {
+		$cnt = func_num_args();
+		if ($cnt == 1) {
+			list($a1) = func_get_args();
+			if ($a1 instanceof TUrl) {
+				// todo
+			}	else
+			if (is_string($a1)) {
+				$_SESSION['document_stream'] .= "$('#"
+				. $this->getClassID()
+				. $this->getClassHandle()
+				. "').css('background-image','url(\""
+				. $a1 . "\")');";
+			}
+		}
+	}
+
+	public function EmitCode($a1)
+	{
+		// jquery
+		$_SESSION['document_stream'] .= "$('#"
+		. $this->getClassID()
+		. $this->getClassHandle()
+		. "').appendTo($('#" . $a1 . "'));";
+
+		// html
+		$str  = "<div class='easyui-panel' id='"   // ööö
+		. $this->getClassID()
+		. $this->getClassHandle()
+		. "' style='position:relative;overflow:auto;'"
+		. "></div>"
+		. $this->Brush->EmitCode($this->getClassID() . $this->getClassHandle());
+
+		return $str;
 	}
 	
 	// ------------------------------------------
@@ -166,100 +276,6 @@ class TWidget extends TObject
 			$str = ""
 			. "$('#wipa0').panel('refresh','/pub/desk/t1.php');";
 			return $str;
-		}
-	}
-	
-	// ---------------------------------------------
-	// set the background of the TWindow.
-	// given on parameter, it is a color, or image.
-	// ---------------------------------------------
-	public function setBackground() {
-		$cnt = func_num_args();
-		if ($cnt == 1) {
-			list($sender) = func_get_args();
-			if ($sender instanceof TColor) {
-				if (empty($this->Color))
-					$this->Color = new TColor($sender); else
-					$this->Color = $sender;
-
-				$a1 = $sender->ColorRed;
-				$a2 = $sender->ColorGreen;
-				$a3 = $sender->ColorBlue;
-				$a4 = $sender->ColorAlpha;
-				
-				//if (is_hex($a1)) $a1 = HexDec($a1);
-				//if (is_hex($a2)) $a2 = HexDec($a2);
-				//if (is_hex($a3)) $a3 = HexDec($a3);
-				//if (is_hex($a4)) $a4 = HexDec($a3);
-				
-				$_SESSION['document_stream'] .= ""
-				. "$('#"
-				. $this->ClassLHS
-				. $this->Number
-				. "').css('background-color','rgb("
-				. $a1 . "," . $a2 . "," . $a3
-				. ")');";
-			}	else
-			if ($sender instanceof TImage) {
-				if (empty($this->Image))
-					$this->Image = $sender;
-				$_SESSION['document_stream'] .= ""
-				. "$('#"
-				. $this->ClassLHS
-				. $this->Number
-				. "').css({'background-image':'url("
-				. $sender->FileName
-				. ")'});\n";
-			}
-		}
-	}
-
-	// ----------------------------
-	// set panel background-color
-	// ----------------------------
-	public function setColor() {
-		$cnt = func_num_args();
-		if ($cnt == 1) {
-			list($a1) = func_get_args();
-			if (is_string($a1)) {
-				$_SESSION['document_stream'] .= ""
-				. "$('#"
-				. $this->ClassLHS
-				. $this->Number
-				. "').css('background-color','" . $a1
-				. "');";
-			}
-		}	else
-		if ($cnt == 3) {
-			list($a1,$a2,$a3) = func_get_args();
-			$_SESSION['document_stream'] .= ""
-			. "$('#"
-			. $this->ClassLHS
-			. $this->Number
-			. "').css('background-color','rgb("
-			. $a1 . "," . $a2 . "," . $a3
-			. ")');";
-		}
-	}
-
-	// ----------------------------
-	// set panel icon image
-	// ----------------------------
-	public function setImage($a1,$a2,$a3) {
-		if (is_string($a1)) {
-			$_SESSION['document_stream'] .= ""
-			. "$('#"
-			. $this->ClassLHS
-			. $this->Number
-			. "').css({'opacity':'1.0'})"
-			.   ".append('<div style=\"background-image:url("
-			. $a1 . ");width:"
-			. $a2 . ";height:"
-			. $a3 . ";opacity:1.0;z-index:1;"
-			. "\"><div style=\""
-			. "position:absolute;font-weight:bold;"
-			. "left:3px;bottom:0;"
-			. "\">dBase4Web</div></div>');";
 		}
 	}
 	

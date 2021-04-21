@@ -34,7 +34,7 @@
 	
 	<script type="text/javascript" src="/src/utils.js"></script>
 </head>
-<body>
+<body style='margin:0px;padding:0px;'>
 <?php
 function file_build_path(...$segments) {
 	return join(DIRECTORY_SEPARATOR, func_get_args($segments));

@@ -19,15 +19,7 @@ class TScreen extends TObject
 	// ctor: constructor
 	public function __construct() {
 		$cnt = func_num_args();
-		parent::__construct($this);
-		
-		$this->setClassName("TScreen");
-		$this->setClassID("qscreen");
-		
-		$this->MarginRect  = new TMarginRect(10,10,10,10);
-		$this->PaddingRect = new TPaddingRect(6,6,6,6);
-		
-		$this->Brush = new TPainterScreen($this);
+		parent::__construct(null);
 		
 		// default values:
 		if ($cnt == 0) {
@@ -47,6 +39,18 @@ class TScreen extends TObject
 				$a1->getBottom());
 			}
 		}
+		
+		$this->setClassName("TScreen");
+		$this->setClassID("qscreen");
+		$this->setParent(null);
+		
+		$this->MarginRect  = new TMarginRect (0,0,0,0);
+		$this->PaddingRect = new TPaddingRect(0,0,0,0);
+		
+		$this->MarginRect->setParent($this);
+		
+		$this->Brush = new TPainterScreen($this);
+		$this->Brush->setParent(get_class($this->Brush));
 	}
 
 	public function getMarginBottom () { return $this->MarginRect->getBottom(); }
@@ -107,7 +111,7 @@ class TScreen extends TObject
 				. ".css('margin-left','"   . $a1 . "px')"
 				. ".css('margin-top','"    . $a2 . "px')"
 				. ".css('margin-right','"  . $a3 . "px')"
-				. ".css('margin-bottom','" . $a4 . "px')";
+				. ".css('margin-bottom','" . $a4 . "px');";
 				$this->setMarginLeft  ($a1);
 				$this->setMarginTop   ($a2);
 				$this->setMarginRight ($a3);
@@ -121,7 +125,7 @@ class TScreen extends TObject
 				. ".css('margin-left','"   . $a1 . "')"
 				. ".css('margin-top','"    . $a2 . "')"
 				. ".css('margin-right','"  . $a3 . "')"
-				. ".css('margin-bottom','" . $a4 . "')";
+				. ".css('margin-bottom','" . $a4 . "');";
 				$this->setMarginLeft  ($a1);
 				$this->setMarginTop   ($a2);
 				$this->setMarginRight ($a3);
@@ -143,7 +147,7 @@ class TScreen extends TObject
 				. ".css('padding-left','"   . $a1 . "px')"
 				. ".css('padding-top','"    . $a2 . "px')"
 				. ".css('padding-right','"  . $a3 . "px')"
-				. ".css('padding-bottom','" . $a4 . "px')";
+				. ".css('padding-bottom','" . $a4 . "px');";
 				$this->setPaddingLeft  ($a1);
 				$this->setPaddingTop   ($a2);
 				$this->setPaddingRight ($a3);
@@ -157,7 +161,7 @@ class TScreen extends TObject
 				. ".css('padding-left','"   . $a1 . "')"
 				. ".css('padding-top','"    . $a2 . "')"
 				. ".css('padding-right','"  . $a3 . "')"
-				. ".css('padding-bottom','" . $a4 . "')";
+				. ".css('padding-bottom','" . $a4 . "');";
 				$this->setPaddingLeft  ($a1);
 				$this->setPaddingTop   ($a2);
 				$this->setPaddingRight ($a3);
@@ -190,6 +194,23 @@ class TScreen extends TObject
 	public function setRelative() { $this->setPosition("relative"); }
 	public function setFixed   () { $this->setPosition("fixed"   ); }
 
+	public function setImage() {
+		$cnt = func_num_args();
+		if ($cnt == 1) {
+			list($a1) = func_get_args();
+			if ($a1 instanceof TUrl) {
+				// todo
+			}	else
+			if (is_string($a1)) {
+				$_SESSION['document_stream'] .= "$('#"
+				. $this->getClassID()
+				. $this->getClassHandle()
+				. "').css('background-image','url("
+				. $a1 . ")');";
+			}
+		}
+	}
+	
 	// --------------------------------------------
 	// perform code emit to parent DIV: $a1
 	// --------------------------------------------
@@ -198,7 +219,10 @@ class TScreen extends TObject
 		$_SESSION['document_stream'] .= "$('#"
 		. $this->getClassID()
 		. $this->getClassHandle()
-		. "').appendTo($('#" . $a1 . "'));";
+		. "').appendTo($('#" . $a1 . "'))"
+		. ".css('width','"   . $this->getVisualRight () . "')"
+		. ".css('height','"  . $this->getVisualBottom() . "')"
+		. ";";
 
 		// html
 		$str  = "<div id='"
@@ -207,6 +231,8 @@ class TScreen extends TObject
 		. "'></div>"
 		. $this->Brush->EmitCode($this->getClassID() . $this->getClassHandle());
 
+		if (!strcmp($a1,"container"))
+		echo   $str; else
 		return $str;
 	}
 

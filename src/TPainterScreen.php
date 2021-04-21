@@ -22,13 +22,15 @@ class TPainterScreen extends TObject
 			
 			// reference to TScreen ...
 			$this->Screen = $sender;
+			$this->Screen->setParent(null);
 
 			$this->setClassName   ("TPainterScreen");
-			$this->setClassID     ("qpainterscreen");
+			$this->setClassID     ("qscreen");
 			$this->setClassHandle ($sender->getClassHandle()+1);
 
 			// default color:
 			$this->Color = new TColor(10,100,200);
+			$this->Color->setParent($this);
 		}
 	}
 
@@ -69,8 +71,8 @@ class TPainterScreen extends TObject
 		$_SESSION['document_stream'] .= "$('#"
 		. $this->getClassID()
 		. $this->getClassHandle()    . "')"
-		. ".css('width','"   . $this->Screen->VisualRect->getWidth () . "')"
-		. ".css('height','"  . $this->Screen->VisualRect->getHeight() . "')"
+//		. ".css('width','"   . $this->Screen->VisualRect->getWidth () . "')"
+//		. ".css('height','"  . $this->Screen->VisualRect->getHeight() . "')"
 		. ".appendTo($('#"   . $a1 . "'));";
 
 		// html

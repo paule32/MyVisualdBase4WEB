@@ -16,6 +16,9 @@ require_once( "TColor.php" );
 require_once( "TPaintDevice.php" );
 require_once( "TDevice.php" );
 require_once( "TScreen.php" );
+require_once( "TWidget.php" );
+require_once( "TPanel.php" );
+require_once( "TDesktopWindow.php" );
 
 // -----------------------------------------------
 // RegisterClass: register classes to be in use

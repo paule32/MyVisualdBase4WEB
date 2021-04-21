@@ -8,13 +8,16 @@
 
 class TWindow extends TWidget
 {
-	public $ClassName = "TWindow";
 	public function __construct() {
 		$cnt = func_num_args();
 		list($sender) = func_get_args();
 		parent::__construct($this,$sender);
-		$this->uiText = $sender->uiText;
-		parent::EmitCode($this);
+		
+		$this->setClassName("TWidget");
+		$this->setClassID("qwidget");
+		$this->setClassHandle($this->getClassHandle()+1);
+
+		//parent::EmitCode($this);
 	}
 	public function __destruct() {
 		parent::__destruct();

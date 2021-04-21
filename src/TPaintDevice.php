@@ -24,10 +24,13 @@ class TPaintDevice extends TObject
 			$this->setClassName   ("TPaintDevice");
 			$this->setClassID     ("qpaintdevice");
 			$this->setClassHandle ($sender->getClassHandle()+1);
+			
+			$this->setParent($sender);
 		}
 	}
 	
 	public function EmitCode($a1) {
+		print_r($a1);
 		$str = "";
 		if (!empty($this->Screen)) {
 			$str = $this->Screen->EmitCode($this->getClassID() . $this->getClassHandle());

@@ -11,10 +11,6 @@ class TPaddingRect extends TRect {
 		$cnt = func_num_args();
 		parent::__construct($this);
 		
-		$this->setClassName("TPaddingRect");
-		$this->setClassID("qpaddingrect");
-		$this->setClassHandle($this->getClassHandle()+1);
-		
 		if ($cnt == 1) {
 			list($a1) = func_get_args();
 			parent::__construct($a1);
@@ -23,6 +19,12 @@ class TPaddingRect extends TRect {
 			list($a1,$a2,$a3,$a4) = func_get_args();
 			parent::__construct($a1,$a2,$a3,$a4);
 		}
+		
+		$this->setClassName("TPaddingRect");
+		$this->setClassID("qpaddingrect");
+		$this->setClassHandle($this->getClassHandle()+1);
+		
+		$this->setParent(null);
 	}
 	public function __destruct() {
 		parent::__destruct();

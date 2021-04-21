@@ -18,18 +18,24 @@ class TColor extends TObject
 	// ctor: constructor
 	public function __construct() {
 		$cnt = func_num_args();
-		parent::__construct($this);
 
 		$this->setClassName   ("TColor");
 		$this->setClassID     ("qcolor");
 		$this->setClassHandle (parent::getClassHandle()+1);
 
 		if ($cnt == 0) {
+			$this->setParent(null);
+			parent::__construct($this);
+			
 			$this->ColorRed   =  10;
 			$this->ColorGreen = 100;
 			$this->ColorBlue  = 200;
 			$this->ColorAlpha = 1.0;
 
+			if (is_hex($this->getRed  ())) { $this->setRed  (hexdec($this->ColorRed  )); }
+			if (is_hex($this->getGreen())) { $this->setGreen(hexdec($this->ColorGreen)); }
+			if (is_hex($this->getBlue ())) { $this->setBlue (hexdec($this->ColorBlue )); }
+			
 			$this->setHtmlColor( "#"
 				. str_pad(dechex($this->getRed  ()),2,'0',STR_PAD_LEFT)
 				. str_pad(dechex($this->getGreen()),2,'0',STR_PAD_LEFT)

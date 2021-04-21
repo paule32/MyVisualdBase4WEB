@@ -17,6 +17,8 @@ class TObject
 	public $ClassParent = null;       // parent object
 	
 	public static $Objects =   [];    // counter
+	
+	public $visited = false;
 
 	// --------------------------------------------
 	public function __construct() {
@@ -27,10 +29,16 @@ class TObject
 			//$this->setParent(null);
 			$this->setClassName("TObject");
 			$this->setClassID($this->addObject("qobject"));
+			$this->setParent(null);
+			$this->visited = true;
 		}	else
 		if ($cnt == 1) {
 			list($sender) = func_get_args();
-			if  ($sender != $this) {
+			$this->setParent($sender);
+			
+			if (empty($sender)) {
+			}	else
+			if ($sender != $this) {
 				//$this->setParent($sender);
 				$this->setClassName($sender->ClassName);
 				$this->setClassID($sender->ClassID);
