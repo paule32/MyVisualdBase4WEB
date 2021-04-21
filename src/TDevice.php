@@ -15,11 +15,7 @@ class TDevice extends TPaintDevice
 			list($sender) = func_get_args();
 			parent::__construct($sender);
 
-			$this->setClassName   ("TDevice");
-			$this->setClassID     ("qdevice");
 			$this->setClassHandle ($sender->getClassHandle()+1);
-			
-			$this->setParent($sender);
 		}
 	}
 
@@ -28,6 +24,7 @@ class TDevice extends TPaintDevice
 	// --------------------------------------------
 	public function EmitCode($a1) {
 		echo "ooooo  " . $a1 . " ooooo";
+		/*
 		// jquery
 		$_SESSION['document_stream'] .= "$('#"
 		. $this->getClassID()
@@ -39,7 +36,7 @@ class TDevice extends TPaintDevice
 		. $this->getClassID()
 		. $this->getClassHandle()
 		. "'></div>"
-		. parent::EmitCode($this->getClassID() . $this->getClassHandle());
+		. parent::EmitCode($this->getClassID() . $this->getClassHandle());*/
 		
 		echo $str;
 	}

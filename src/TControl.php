@@ -8,7 +8,6 @@
 
 class TControl extends TObject
 {
-	public $ClassName  = "TControl"; // class name
 	public $ParentDiv  = "";		 // name of the parent <DIV>
 	public static $Controls = [];	 // visual controls list
 	

@@ -19,12 +19,7 @@ class TMarginRect  extends TRect
 			parent::__construct($a1,$a2,$a3,$a4);
 		}
 		
-		$this->setClassName("TMarginRect");
-		$this->setClassID("qmarginrect");
 		$this->setClassHandle($this->getClassHandle()+1);
-		
-		//if (!$this->visited)
-		//$this->setParent(null);
 	}
 	
 	public function __destruct() {

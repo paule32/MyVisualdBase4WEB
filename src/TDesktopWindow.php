@@ -13,11 +13,7 @@ class TDesktopWindow extends TWidget
 		list($sender) = func_get_args();
 		parent::__construct($sender);
 		
-		$this->setClassName("TDesktopWindow");
-		$this->setClassID("qdesktopwindow");
 		$this->setClassHandle($this->getClassHandle()+1);
-		
-		$this->setParent($sender);
 	}
 	
 	// --------------------------------------------
@@ -26,10 +22,11 @@ class TDesktopWindow extends TWidget
 	public function EmitCode($a1) {
 		echo "<pre>uuuuuuu \n\n";
 		echo get_called_class() . "\n---\n";
-		print_r($this);
+		//print_r($this);
 		echo "\n---\n\n";
-		print_r($this->getParent());
+		print_r($this);
 		echo " ttttttt";
+		/*
 		// jquery
 		$_SESSION['document_stream'] .= "$('#"
 		. $this->getClassID()
@@ -44,16 +41,16 @@ class TDesktopWindow extends TWidget
 		. $this->getClassHandle()
 		. "'></div>"*/
 		
-		if ($this->internalParent instanceof TDevice) {
-			echo "-------- " . $this->getClassID() . " ------";
-		}
-		$str = "------------------" .
+		//if ($this->internalParent instanceof TDevice) {
+		//	echo "-------- " . $this->getClassID() . " ------";
+		//}
+		//$str = "------------------" .
 		
-		parent::EmitCode($this->getClassID() . $this->getClassHandle());
+		//parent::EmitCode($this->getClassID() . $this->getClassHandle());
 		
-		if (!strcmp($a1,"container"))
-		echo   $str; else
-		return $str;
+		//if (!strcmp($a1,"container"))
+		//echo   $str; else
+		//return $str;
 	}
 	
 	public function __destruct() {

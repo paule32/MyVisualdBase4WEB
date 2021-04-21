@@ -7,7 +7,7 @@
 // -----------------------------------------------------
 
 class TException extends TObject {
-	public $ClassName = "TException";
+
 	public function __construct($a1) {
 		parent::__construct();
 	}

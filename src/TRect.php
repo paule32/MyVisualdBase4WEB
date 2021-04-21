@@ -28,9 +28,6 @@ class TRect extends TObject
 		$cnt = func_num_args();
 		parent::__construct($this);
 		
-		$this->setClassName("TRect");
-		$this->setClassID("qrect");
-		
 		if ($cnt == 0) {
 			$this->setTop   (1);
 			$this->setLeft  (2);

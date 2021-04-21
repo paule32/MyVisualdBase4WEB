@@ -40,17 +40,10 @@ class TScreen extends TObject
 			}
 		}
 		
-		$this->setClassName("TScreen");
-		$this->setClassID("qscreen");
-		$this->setParent(null);
-		
 		$this->MarginRect  = new TMarginRect (0,0,0,0);
 		$this->PaddingRect = new TPaddingRect(0,0,0,0);
 		
-		$this->MarginRect->setParent($this);
-		
 		$this->Brush = new TPainterScreen($this);
-		$this->Brush->setParent(get_class($this->Brush));
 	}
 
 	public function getMarginBottom () { return $this->MarginRect->getBottom(); }
@@ -106,7 +99,7 @@ class TScreen extends TObject
 			if (is_int($a1) && is_int($a2)
 			&&  is_int($a3) && is_int($a4)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()  . "')"
 				. ".css('margin-left','"   . $a1 . "px')"
 				. ".css('margin-top','"    . $a2 . "px')"
@@ -120,7 +113,7 @@ class TScreen extends TObject
 			if (is_string($a1) && is_string($a2)
 			&&  is_string($a3) && is_string($a4)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()  . "')"
 				. ".css('margin-left','"   . $a1 . "')"
 				. ".css('margin-top','"    . $a2 . "')"
@@ -142,7 +135,7 @@ class TScreen extends TObject
 			if (is_int($a1) && is_int($a2)
 			&&  is_int($a3) && is_int($a4)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()  . "')"
 				. ".css('padding-left','"   . $a1 . "px')"
 				. ".css('padding-top','"    . $a2 . "px')"
@@ -156,7 +149,7 @@ class TScreen extends TObject
 			if (is_string($a1) && is_string($a2)
 			&&  is_string($a3) && is_string($a4)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()  . "')"
 				. ".css('padding-left','"   . $a1 . "')"
 				. ".css('padding-top','"    . $a2 . "')"
@@ -181,7 +174,7 @@ class TScreen extends TObject
 		||  (!strcmp($tmp,"relative"))
 		||  (!strcmp($tmp,"fixed"   ))) {
 			$_SESSION['document_stream'] .= "$('#"
-			. $this->getClassID()
+			//. $this->getClassID()
 			. $this->getClassHandle()
 			. "').css('position','" . $tmp . "');";
 			$this->Position = $tmp;
@@ -203,7 +196,7 @@ class TScreen extends TObject
 			}	else
 			if (is_string($a1)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()
 				. "').css('background-image','url("
 				. $a1 . ")');";
@@ -217,7 +210,7 @@ class TScreen extends TObject
 	public function EmitCode($a1) {
 		// jquery
 		$_SESSION['document_stream'] .= "$('#"
-		. $this->getClassID()
+		//. $this->getClassID()
 		. $this->getClassHandle()
 		. "').appendTo($('#" . $a1 . "'))"
 		. ".css('width','"   . $this->getVisualRight () . "')"
@@ -225,15 +218,16 @@ class TScreen extends TObject
 		. ";";
 
 		// html
+		/*
 		$str  = "<div id='"
-		. $this->getClassID()
+		//. $this->getClassID()
 		. $this->getClassHandle()
 		. "'></div>"
 		. $this->Brush->EmitCode($this->getClassID() . $this->getClassHandle());
 
 		if (!strcmp($a1,"container"))
 		echo   $str; else
-		return $str;
+		return $str;*/
 	}
 
 	// dtor: free used memory ...

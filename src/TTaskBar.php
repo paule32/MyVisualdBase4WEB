@@ -11,7 +11,7 @@ class TTaskBar extends TPanel {
 		$cnt = func_num_args();
 		list($sender) = func_get_args();
 		parent::__construct($this,$sender);
-		$this->uiText = $sender->uiText;
+
 		parent::EmitCode($this);
 	}
 	public function __destruct() {

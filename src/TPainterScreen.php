@@ -9,7 +9,7 @@
 class TPainterScreen extends TObject
 {
 	private $Color  = null;
-	private $Screen = null;
+	//private $Screen = null;
 	
 	// --------------------------------------------
 	// ctor: constructor
@@ -20,17 +20,10 @@ class TPainterScreen extends TObject
 			list($sender) = func_get_args();
 			parent::__construct($sender);
 			
-			// reference to TScreen ...
-			$this->Screen = $sender;
-			$this->Screen->setParent(null);
-
-			$this->setClassName   ("TPainterScreen");
-			$this->setClassID     ("qscreen");
 			$this->setClassHandle ($sender->getClassHandle()+1);
 
 			// default color:
 			$this->Color = new TColor(10,100,200);
-			$this->Color->setParent($this);
 		}
 	}
 
@@ -54,19 +47,22 @@ class TPainterScreen extends TObject
 			list($a1,$a2,$a3) = func_get_args();
 			$this->Color = new TColor($a1,$a2,$a3);
 		}
+		/*
 		// jquery
 		$_SESSION['document_stream'] .= "$('#"
 		. $this->getClassID()
 		. $this->getClassHandle()  . "').css("
 		. "'background-color','"
 		. $this->Color->getHtmlColor()
-		. "');";
+		. "');";*/
 	}
 
 	// --------------------------------------------
 	// perform code emit to parent DIV: $a1
 	// --------------------------------------------
 	public function EmitCode($a1) {
+		
+		/*
 		// jquery
 		$_SESSION['document_stream'] .= "$('#"
 		. $this->getClassID()
@@ -81,7 +77,7 @@ class TPainterScreen extends TObject
 		. $this->getClassHandle()
 		. "'></div>";
 		
-		return $str;
+		return $str;*/
 	}
 	
 	// --------------------------------------------

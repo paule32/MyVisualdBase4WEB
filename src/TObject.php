@@ -11,37 +11,26 @@
 // -------------------------------
 class TObject
 {
-	public $ClassName   = "TObject";  // class name
-	public $ClassID     = "";         // class ID name
 	public $ClassHandle =  0;         // class ID number
-	public $ClassParent = null;       // parent object
 	
 	public static $Objects =   [];    // counter
 	
-	public $visited = false;
-
 	// --------------------------------------------
 	public function __construct() {
 		$cnt = func_num_args();
 		$this->ClassHandle++;
 
 		if ($cnt == 0) {
-			//$this->setParent(null);
-			$this->setClassName("TObject");
-			$this->setClassID($this->addObject("qobject"));
+			//$this->setClassID($this->addObject("qobject"));
 			$this->setParent(null);
 			$this->visited = true;
 		}	else
 		if ($cnt == 1) {
 			list($sender) = func_get_args();
-			$this->setParent($sender);
-			
 			if (empty($sender)) {
 			}	else
 			if ($sender != $this) {
-				//$this->setParent($sender);
-				$this->setClassName($sender->ClassName);
-				$this->setClassID($sender->ClassID);
+				//$this->setClassID($sender->ClassID);
 			}	else {
 				// todo: error msg.
 			}
@@ -85,13 +74,7 @@ class TObject
 	// --------------------------------------------
 	// seter's: class name
 	// --------------------------------------------
-	public function setClassName($a1) {
-		if (is_string($a1)) {
-			$this->ClassName = $a1;
-		}
-	}
 	public function setClassHandle ($a1) { $this->ClassHandle = $a1; }
-	public function setClassID     ($a1) { $this->ClassID     = $a1; }
 	public function setParent      ($a1) { $this->ClassParent = $a1; }
 	
 	// --------------------------------------------
@@ -99,7 +82,6 @@ class TObject
 	// --------------------------------------------
 	public function getClassName   () { return $this->ClassName;   }
 	public function getClassHandle () { return $this->ClassHandle; }
-	public function getClassID     () { return $this->ClassID;     }
 	public function getParent      () { return $this->ClassParent; }
 	
 	// dtor: free used memory ...

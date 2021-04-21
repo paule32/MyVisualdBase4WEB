@@ -11,14 +11,11 @@
 // -------------------------------------
 class TApplication extends TWindow
 {
-	public $ClassName  = "TApplication";
 	public $app_device = null;		// default: TScreen
 	
 	// ctor: constructor
 	public function __construct() {
 		$this->app_device = new TDevice(new TScreen());
-		$this->ClassName  = "TApplication";
-		//parent::__construct($this);
 	}
 	
 	// start the application ...

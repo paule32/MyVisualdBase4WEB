@@ -11,8 +11,6 @@ class TWidget extends TObject
 	public $MarginRect  = null;
 	public $VisualRect  = null;
 	public $PaddingRect = null;
-	
-	public $internalParent = null;
 
 	public $Brush  = null;
 	
@@ -22,16 +20,12 @@ class TWidget extends TObject
 	public function __construct() {
 		$cnt = func_num_args();
 		parent::__construct($this);
-		
-		$this->setClassName("TWidget");
-		$this->setClassID("qwidget");
+
 		$this->setClassHandle($this->getClassHandle()+1);
 
 		$this->MarginRect  = new TMarginRect(0,0,0,0);
 		$this->PaddingRect = new TPaddingRect(0,0,0,0);
 
-		$this->MarginRect->setParent($this);
-		
 		$this->Brush = new TPainterScreen($this);
 
 		// default values:
@@ -44,7 +38,7 @@ class TWidget extends TObject
 		}	else
 		if ($cnt == 1) {
 			list($a1) = func_get_args();
-			$this->setParent($a1);
+			//$this->setParent($a1);
 			if ($a1 instanceof TRect) {
 				$this->VisualRect = new TRect(
 				$a1->getLeft  (),
@@ -111,7 +105,7 @@ class TWidget extends TObject
 			if (is_int($a1) && is_int($a2)
 			&&  is_int($a3) && is_int($a4)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()  . "')"
 				. ".css('margin-left','"   . $a1 . "px')"
 				. ".css('margin-top','"    . $a2 . "px')"
@@ -125,7 +119,7 @@ class TWidget extends TObject
 			if (is_string($a1) && is_string($a2)
 			&&  is_string($a3) && is_string($a4)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()  . "')"
 				. ".css('margin-left','"   . $a1 . "')"
 				. ".css('margin-top','"    . $a2 . "')"
@@ -147,7 +141,7 @@ class TWidget extends TObject
 			if (is_int($a1) && is_int($a2)
 			&&  is_int($a3) && is_int($a4)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()  . "')"
 				. ".css('padding-left','"   . $a1 . "px')"
 				. ".css('padding-top','"    . $a2 . "px')"
@@ -161,7 +155,7 @@ class TWidget extends TObject
 			if (is_string($a1) && is_string($a2)
 			&&  is_string($a3) && is_string($a4)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()  . "')"
 				. ".css('padding-left','"   . $a1 . "')"
 				. ".css('padding-top','"    . $a2 . "')"
@@ -186,7 +180,7 @@ class TWidget extends TObject
 		||  (!strcmp($tmp,"relative"))
 		||  (!strcmp($tmp,"fixed"   ))) {
 			$_SESSION['document_stream'] .= "$('#"
-			. $this->getClassID()
+			//. $this->getClassID()
 			. $this->getClassHandle()
 			. "').css('position','" . $tmp . "');";
 			$this->Position = $tmp;
@@ -208,7 +202,7 @@ class TWidget extends TObject
 			}	else
 			if (is_string($a1)) {
 				$_SESSION['document_stream'] .= "$('#"
-				. $this->getClassID()
+				//. $this->getClassID()
 				. $this->getClassHandle()
 				. "').css('background-image','url(\""
 				. $a1 . "\")');";
@@ -220,19 +214,20 @@ class TWidget extends TObject
 	{
 		// jquery
 		$_SESSION['document_stream'] .= "$('#"
-		. $this->getClassID()
+		//. $this->getClassID()
 		. $this->getClassHandle()
 		. "').appendTo($('#" . $a1 . "'));";
 
 		// html
+		/*
 		$str  = "<div class='easyui-panel' id='"   // ööö
-		. $this->getClassID()
+		//. $this->getClassID()
 		. $this->getClassHandle()
 		. "' style='position:relative;overflow:auto;'"
 		. "></div>"
 		. $this->Brush->EmitCode($this->getClassID() . $this->getClassHandle());
 
-		return $str;
+		return $str;*/
 	}
 	
 	// ------------------------------------------

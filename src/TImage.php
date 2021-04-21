@@ -8,9 +8,6 @@
 
 class TImage extends TObject
 {
-	public $ClassName  = 'TImage';
-	
-	public $Parent   = null;
 	public $FileName = "";
 
 	// --------------------------------------------

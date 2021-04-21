@@ -8,7 +8,7 @@
 
 class TDesktopIcon extends TPanWindow
 {
-	public $ClassName = "TDesktopIcon";
+
 	public function __construct() {
 		$cnt = func_num_args();
 		list($sender) = func_get_args();

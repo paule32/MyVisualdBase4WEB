@@ -8,8 +8,6 @@
 
 class TBackground extends TObject
 {
-	public $ClassName  = 'TBackground';
-	
 	public $Rect   = null;	// screen area size
 	public $Color  = null;
 	public $Image  = null;
@@ -24,7 +22,6 @@ class TBackground extends TObject
 		if ($cnt == 0) {
 			parent::__construct();
 			$this->Parent = new TObject;
-			$this->Number++;
 			$this->ClassType = 0;
 			$this->Color = new TColor(20,100,200);
 			$this->setColor($this->Color);

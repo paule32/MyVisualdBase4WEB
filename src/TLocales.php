@@ -11,8 +11,6 @@
 // -----------------------------------------------
 class TLocales extends TObject
 {
-	public $ClassName       = "TLocales";
-	
 	public $DefaultLang     = "English";
 	public $DefaultCurrency = "USD";
 	//

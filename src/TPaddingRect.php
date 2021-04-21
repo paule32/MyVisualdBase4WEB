@@ -20,11 +20,7 @@ class TPaddingRect extends TRect {
 			parent::__construct($a1,$a2,$a3,$a4);
 		}
 		
-		$this->setClassName("TPaddingRect");
-		$this->setClassID("qpaddingrect");
 		$this->setClassHandle($this->getClassHandle()+1);
-		
-		$this->setParent(null);
 	}
 	public function __destruct() {
 		parent::__destruct();
