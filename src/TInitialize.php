@@ -6,18 +6,11 @@
 // License : (c) kallup.net - non-profit - 2021
 // -----------------------------------------------------
 
+declare(strict_types = 1);
+namespace kallup\awt;
+
 require_once( "TObject.php" );
-require_once( "TRect.php" );
-require_once( "TMarginRect.php" );
-require_once( "TPaddingRect.php" );
-require_once( "TVisualRect.php" );
-require_once( "TPainterScreen.php" );
-require_once( "TColor.php" );
-require_once( "TPaintDevice.php" );
 require_once( "TDevice.php" );
-require_once( "TScreen.php" );
-require_once( "TWidget.php" );
-require_once( "TPanel.php" );
 require_once( "TDesktopWindow.php" );
 
 // -----------------------------------------------

@@ -1,0 +1,103 @@
+
+kallup\awt\TDesktopWindow Object
+(
+    [Device:kallup\awt\TDesktopWindow:private] => kallup\awt\TDevice Object
+        (
+            [Screen] => kallup\awt\TScreen Object
+                (
+                    [Position] => absolute
+                    [MarginRect] => kallup\awt\TMarginRect Object
+                        (
+                            [Left] => 20px
+                            [Top] => 20px
+                            [Right] => 20px
+                            [Bottom] => 20px
+                            [Width] => 20px
+                            [Height] => 20px
+                            [ClassHandle] => 2
+                        )
+
+                    [VisualRect] => kallup\awt\TVisualRect Object
+                        (
+                            [Left] => 0px
+                            [Top] => 0px
+                            [Right] => 100vw
+                            [Bottom] => 100vh
+                            [Width] => 100vw
+                            [Height] => 100vh
+                            [ClassHandle] => 2
+                        )
+
+                    [PaddingRect] => kallup\awt\TPaddingRect Object
+                        (
+                            [Left] => 0px
+                            [Top] => 0px
+                            [Right] => 0px
+                            [Bottom] => 0px
+                            [Width] => 0px
+                            [Height] => 0px
+                            [ClassHandle] => 3
+                        )
+
+                    [Brush] => kallup\awt\TPainterScreen Object
+                        (
+                            [Color:kallup\awt\TPainterScreen:private] => kallup\awt\TColor Object
+                                (
+                                    [ColorRed] => 10
+                                    [ColorGreen] => 100
+                                    [ColorBlue] => 200
+                                    [ColorAlpha] => 1
+                                    [ColorName] => #0a64c8
+                                    [ClassHandle] => 1
+                                )
+
+                            [ClassHandle] => 2
+                        )
+
+                    [ClassHandle] => 1
+                )
+
+            [Printer] => 
+            [ClassHandle] => 2
+        )
+
+    [MarginRect] => kallup\awt\TMarginRect Object
+        (
+            [Left] => 0px
+            [Top] => 0px
+            [Right] => 0px
+            [Bottom] => 0px
+            [Width] => 0px
+            [Height] => 0px
+            [ClassHandle] => 2
+        )
+
+    [VisualRect] => 
+    [PaddingRect] => kallup\awt\TPaddingRect Object
+        (
+            [Left] => 0px
+            [Top] => 0px
+            [Right] => 0px
+            [Bottom] => 0px
+            [Width] => 0px
+            [Height] => 0px
+            [ClassHandle] => 3
+        )
+
+    [Brush] => kallup\awt\TPainterScreen Object
+        (
+            [Color:kallup\awt\TPainterScreen:private] => kallup\awt\TColor Object
+                (
+                    [ColorRed] => 200
+                    [ColorGreen] => 20
+                    [ColorBlue] => 100
+                    [ColorAlpha] => 1
+                    [ColorName] => #c81464
+                    [ClassHandle] => 1
+                )
+
+            [ClassHandle] => 3
+        )
+
+    [ClassHandle] => 3
+)

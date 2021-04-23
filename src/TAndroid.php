@@ -9,5 +9,7 @@
 declare(strict_types=1);
 namespace paule32\dBase4WEB
 
+require_once( "TDevice.php" );
+
 class TAndroid extends TDevice { }
 ?>

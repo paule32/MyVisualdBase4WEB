@@ -6,6 +6,11 @@
 // License : (c) kallup.net - non-profit - 2021
 // -----------------------------------------------------
 
+declare(strict_types = 1);
+namespace kallup\awt;
+
+require_once( "TObject.php" );
+
 class TString extends TObject
 {
 	public $Text = "";

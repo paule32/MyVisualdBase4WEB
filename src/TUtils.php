@@ -6,6 +6,9 @@
 // License : (c) kallup.net - non-profit - 2021
 // -----------------------------------------------------
 
+declare(strict_types = 1);
+namespace kallup\awt;
+
 function is_hex($hex_code) {
 	return @preg_match("/^[a-f0-9]{2,}$/i",
 	$hex_code) && !(strlen($hex_code) & 1);

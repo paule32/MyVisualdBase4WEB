@@ -7,18 +7,20 @@
 // -----------------------------------------------------
 
 declare(strict_types = 1);
-namespace paule32\dbase
+namespace kallup\awt;
+
+require_once( "TObject.php" );
 
 class TSize extends TObject
 {
 	private int $tzHeight = 0;
 	private int $tzWidth  = 0;
 
-	public function setHeight(int h) { $this->tzHeight = h; }
-	public function setWidth (int w) { $this->tzWidth  = w; }
+	public function setHeight(int $h) { $this->tzHeight = $h; }
+	public function setWidth (int $w) { $this->tzWidth  = $w; }
 	
-	public function int height() { return $this->tzHeight; }
-	public function int width () { return $this->tzWidth;  }
+	public function height() { return $this->tzHeight; }
+	public function width () { return $this->tzWidth;  }
 
 	// -----------------------------------------------------------
 	// returns true, if either width, and height <= 0; else false

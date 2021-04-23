@@ -6,7 +6,12 @@
 // License : (c) kallup.net - non-profit - 2021
 // -----------------------------------------------------
 
-class TPaintDevice extends TObject
+declare(strict_types = 1);
+namespace kallup\awt;
+
+require_once( "TDevice.php" );
+
+class TPaintDevice extends TDevice
 {
 	public $Screen  = null; 	// visual screen
 	public $Printer = null; 	// printer
@@ -29,9 +34,10 @@ class TPaintDevice extends TObject
 		print_r($a1);
 		$str = "";
 		if (!empty($this->Screen)) {
+			echo "\nTScreen";
 			//$str = $this->Screen->EmitCode($this->getClassID() . $this->getClassHandle());
 		}
-		return $str;
+		//return $str;
 	}
 	
 	// dtor: free used memory ...

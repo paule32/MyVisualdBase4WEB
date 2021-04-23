@@ -6,13 +6,13 @@
 // License : (c) kallup.net - non-profit - 2021
 // -----------------------------------------------------
 
-// -----------------------------------------------------------
-// class TRect: represents an area/size for a device/window.
-// -----------------------------------------------------------
+declare(strict_types = 1);
+namespace kallup\awt;
+
+require_once( "TObject.php" );
+
 class TRect extends TObject
 {	
-	public $proxy  = "";		// margin, padding, ...
-	
 	public $Left   = "0px";
 	public $Top    = "0px";
 	public $Right  = "0px";

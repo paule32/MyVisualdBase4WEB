@@ -6,6 +6,14 @@
 // License : (c) kallup.net - non-profit - 2021
 // -----------------------------------------------------
 
+declare(strict_types = 1);
+namespace kallup\awt;
+
+require_once( "TObject.php" );
+require_once( "TMarginRect.php" );
+require_once( "TPaddingRect.php" );
+require_once( "TVisualRect.php" );
+
 class TWidget extends TObject
 {
 	public $MarginRect  = null;
@@ -212,6 +220,8 @@ class TWidget extends TObject
 
 	public function EmitCode($a1)
 	{
+		
+		/*
 		// jquery
 		$_SESSION['document_stream'] .= "$('#"
 		//. $this->getClassID()

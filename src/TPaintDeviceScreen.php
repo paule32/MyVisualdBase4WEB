@@ -1,12 +1,17 @@
 <?php
 // ------------------------------------------------------
-// File    : src/TPainterScreen.php
+// File    : src/TPaintDeviceScreen.php
 //
 // Autor   : Jens Kallup <kallup.jens@web.de> - paule32
 // License : (c) kallup.net - non-profit - 2021
 // -----------------------------------------------------
 
-class TPainterScreen extends TObject
+declare(strict_types = 1);
+namespace kallup\awt;
+
+require_once( "TPaintDevice.php" );
+
+class TPaintDeviceScreen extends TPaintDevice
 {
 	private $Color  = null;
 	//private $Screen = null;
@@ -27,9 +32,6 @@ class TPainterScreen extends TObject
 		}
 	}
 
-	// --------------------------------------------
-	// set color of the board
-	// --------------------------------------------
 	public function setColor() {
 		$cnt = func_num_args();
 		if ($cnt == 1) {
@@ -47,14 +49,6 @@ class TPainterScreen extends TObject
 			list($a1,$a2,$a3) = func_get_args();
 			$this->Color = new TColor($a1,$a2,$a3);
 		}
-		/*
-		// jquery
-		$_SESSION['document_stream'] .= "$('#"
-		. $this->getClassID()
-		. $this->getClassHandle()  . "').css("
-		. "'background-color','"
-		. $this->Color->getHtmlColor()
-		. "');";*/
 	}
 
 	// --------------------------------------------

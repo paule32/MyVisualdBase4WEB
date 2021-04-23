@@ -1,0 +1,55 @@
+// ------------------------------------------------------
+// File    : src/cross/dos/main.cc
+//
+// Autor   : Jens Kallup <kallup.jens@web.de> - paule32
+// License : (c) kallup.net - non-profit - 2021
+// -----------------------------------------------------
+
+# include <windows.h>
+# include "resource.h"
+
+IDI_DRAWWINDOW          ICON                    "favicon.ico"
+IDI_SMALL               ICON                    "small.ico"
+
+IDC_DRAWWINDOW MENU 
+BEGIN
+    POPUP "Application"
+    BEGIN
+        MENUITEM "Exit",                    IDM_EXIT
+    END
+    POPUP "Help"
+    BEGIN
+        MENUITEM "About ...",               IDM_ABOUT
+    END
+END
+
+IDC_DRAWWINDOW ACCELERATORS 
+BEGIN
+    "?",            IDM_ABOUT,              ASCII,  ALT
+END
+
+IDD_ABOUTBOX DIALOG  22, 17, 230, 75
+STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 9, "System"
+BEGIN
+    ICON            IDI_DRAWWINDOW,IDC_MYICON,14,9,16,16
+    LTEXT           "WinDOS Version 0.1",IDC_STATIC,49,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2021 paule32",IDC_STATIC,49,20,119,8
+    DEFPUSHBUTTON   "Ok.",IDOK,195,6,30,11,WS_GROUP
+END
+
+IDB_LEFT                BITMAP                  "left.bmp"
+IDB_BOTTOM              BITMAP                  "bottom.bmp"
+IDB_TOP                 BITMAP                  "top.bmp"
+IDB_RIGHT               BITMAP                  "right.bmp"
+IDB_CLOSE               BITMAP                  "close.bmp"
+IDB_MAX                 BITMAP                  "max.bmp"
+IDB_MIN                 BITMAP                  "min.bmp"
+IDB_RESTORE             BITMAP                  "restore.bmp"
+
+STRINGTABLE 
+BEGIN
+    IDS_APP_TITLE          "Win-DOS 0.1 (c) 2021 paule32"
+    IDC_DOSWINDOW          "WINDOSPAULE32"
+END

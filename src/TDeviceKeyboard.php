@@ -1,6 +1,6 @@
 <?php
 // ------------------------------------------------------
-// File    : src/TPaddingRect.php
+// File    : src/TDeviceKeyboard.php
 //
 // Autor   : Jens Kallup <kallup.jens@web.de> - paule32
 // License : (c) kallup.net - non-profit - 2021
@@ -9,24 +9,19 @@
 declare(strict_types = 1);
 namespace kallup\awt;
 
-require_once( "TRect.php" );
+require_once( "TObject.php" );
 
-class TPaddingRect extends TRect {
+class TDeviceKeyboard extends TObject
+{
+	// --------------------------------------------
 	public function __construct() {
 		$cnt = func_num_args();
-		parent::__construct($this);
-		
-		if ($cnt == 1) {
-			list($a1) = func_get_args();
-			parent::__construct($a1);
-		}	else
-		if ($cnt == 4) {
-			list($a1,$a2,$a3,$a4) = func_get_args();
-			parent::__construct($a1,$a2,$a3,$a4);
+		if ($cnt == 0) {
+			parent::__construct($this);
 		}
-		
-		$this->setClassHandle($this->getClassHandle()+1);
 	}
+
+	// dtor: free used memory ...
 	public function __destruct() {
 		parent::__destruct();
 	}
