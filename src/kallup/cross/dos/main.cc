@@ -342,6 +342,11 @@ WndProc(
 			}
 			return TRUE;
 		break;
+		case WM_NCACTIVATE:
+		case WM_SHOWWINDOW:
+			OnNcPaint(hWnd, message, wParam, lParam);
+			return 0;
+		break;
 		case WM_PAINT:
 			hdc = BeginPaint(hwnd, &ps);
 			{
