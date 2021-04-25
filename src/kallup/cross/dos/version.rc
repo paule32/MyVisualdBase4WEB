@@ -1,0 +1,52 @@
+// ------------------------------------------------------
+// File    : src/cross/version.rc
+//
+// Autor   : Jens Kallup <kallup.jens@web.de> - paule32
+// License : (c) kallup.net - non-profit - 2021
+// -----------------------------------------------------
+#if defined(__MSC_VER) || defined(__WIN32__) || defined(__WIN64__)
+# include <windows.h>
+
+// DLL version information.
+VS_VERSION_INFO    VERSIONINFO
+
+FILEVERSION        1,0,0,0
+PRODUCTVERSION     1,0,0,0
+
+FILEFLAGSMASK      VS_FFI_FILEFLAGSMASK
+
+#ifdef _DEBUG
+	FILEFLAGS      VS_FF_DEBUG | VS_FF_PRERELEASE
+#else
+	FILEFLAGS      0
+#endif
+
+FILEOS             VOS_NT_WINDOWS32
+FILETYPE           VFT_DLL
+FILESUBTYPE        VFT2_UNKNOWN
+BEGIN
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "08090409"
+		BEGIN
+			VALUE "CompanyName", "kallup.net non-profit"
+			VALUE "FileDescription", "A library for GUI development."
+			VALUE "FileVersion", "1.0.0.0"
+			VALUE "InternalName", "penku"
+			VALUE "LegalCopyright", "© 2021 kallup.net"
+			VALUE "OriginalFilename", "pengu.dll"
+			VALUE "ProductName", "Utils Library"
+			VALUE "ProductVersion", "1.0.0.0"
+		END
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x809, 1200
+	END
+END
+
+#else
+	#ifdef __GNUC__
+	// gcc
+	#endif
+#endif

@@ -6,9 +6,23 @@
 // -----------------------------------------------------
 
 // ms-windows header's:
+# define CINTERFACE
+
+# define __RPC__deref_out
+# define __in_opt
+# define __deref_out
+
 # include <windows.h>
+# include <windowsx.h>
 # include <commctrl.h>
+# include <ObjBase.h>
+# include <initguid.h>
+# include "Uiribbon.h"
+
 # include "resource.h"
+
+DEFINE_GUID(IID_IUIFRAMEWORK  , 0xf4f0385d, 0x6872, 0x43a8, 0xad, 0x09, 0x4c, 0x33, 0x9c, 0xb3, 0xf5, 0xc5);
+DEFINE_GUID(IID_IUIAPPLICATION, 0xd428903c, 0x729a, 0x491d, 0x91, 0x0d, 0x68, 0x2a, 0x08, 0xff, 0x25, 0x22);
 
 // common header's:
 # include <stdlib.h>
@@ -22,6 +36,21 @@
 
 # undef  MAX_LOADSTRING
 # define MAX_LOADSTRING 100
+
+
+BOOL InitializeFramework(HWND hWnd);
+void DestroyRibbon();
+
+HRESULT STDMETHODCALLTYPE QueryInterface(IUIApplication *This, REFIID vtblID, void **ppv);
+ULONG   STDMETHODCALLTYPE AddRef(IUIApplication *This);
+ULONG   STDMETHODCALLTYPE Release(IUIApplication *This);
+HRESULT STDMETHODCALLTYPE OnViewChanged(IUIApplication *This, UINT32 viewId, UI_VIEWTYPE typeID, IUnknown *view, UI_VIEWVERB verb, INT32 uReasonCode);
+HRESULT STDMETHODCALLTYPE OnCreateUICommand(IUIApplication *This, UINT32 commandId, UI_COMMANDTYPE typeID, IUICommandHandler **commandHandler);
+HRESULT STDMETHODCALLTYPE OnDestroyUICommand (IUIApplication *This, UINT32 commandId,  UI_COMMANDTYPE typeID, IUICommandHandler *commandHandler) ;
+
+int menuDrawer = 0;
+RECT editRect;
+static HMENU Menu;
 
 TCHAR szTitle     [MAX_LOADSTRING];
 TCHAR szClassName [MAX_LOADSTRING];
@@ -223,6 +252,174 @@ UINT m_moveHitTest;
 UINT m_downHitTest;
 
 BOOL m_bTrans;
+HWND hwndEdit;
+
+typedef void (WINAPI * RtlGetVersion_FUNC) (OSVERSIONINFOEXW *);
+float OsVersion = 0.0f;
+
+BOOL RtlGetVersionEx(OSVERSIONINFOEX * os)
+{
+	HMODULE hMod;
+    RtlGetVersion_FUNC func;
+	
+	OSVERSIONINFOEXW o;
+    OSVERSIONINFOEXW * osw = &o;
+	
+	hMod = LoadLibrary(TEXT("ntdll.dll"));
+	if (hMod)
+    {
+        func = (RtlGetVersion_FUNC)GetProcAddress(hMod, "RtlGetVersion");
+        if (func == 0)
+        {
+            FreeLibrary(hMod);
+            return FALSE;
+        }
+        ZeroMemory(osw, sizeof(*osw));
+        osw->dwOSVersionInfoSize = sizeof(*osw);
+        func(osw);
+	}
+	else
+        return FALSE;
+    FreeLibrary(hMod);
+    return TRUE;
+}
+
+// Gets the OS version as float.
+// Returns the OS version as float.
+//
+// Windows 10             : 10.0
+// Windows 8.1            : 6.3
+// Windows 8.0            : 6.2
+// Windows Server 2012    : 6.15
+// Windows 7              : 6.1
+// Windows Server 2008 R2 : 6.05
+// Windows Vista          : 6.0
+float GetOsVersion()
+{
+    OSVERSIONINFOEX info;
+    ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
+    info.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	
+	GetVersionEx((LPOSVERSIONINFO)&info);
+	
+	return
+		(info.dwMajorVersion * 1.0f) +
+		(info.dwMinorVersion * 0.1f) - 
+	   ((info.wProductType != VER_NT_WORKSTATION) ? 0.05f : 0.0f);
+}
+
+IUIApplicationVtbl myRibbon_Vtbl = {QueryInterface,
+	AddRef,
+	Release,
+	OnViewChanged,
+	OnCreateUICommand,
+	OnDestroyUICommand};
+
+LONG OutstandingObjects = 0;
+IUIFramework *g_pFramework = NULL;  // Reference to the Ribbon framework.
+
+HRESULT STDMETHODCALLTYPE QueryInterface(IUIApplication *This, REFIID vtblID, void **ppv)
+{
+	/* No match */
+	if (!IsEqualIID(vtblID, IID_IUIAPPLICATION) && !IsEqualIID(vtblID, IID_IUnknown)) {
+		*ppv = 0;
+		return(E_NOINTERFACE);
+	}
+
+	/* Point our IUIApplication interface to our ribbon obj */
+	*ppv = This;
+
+	/* Ref count */
+	This->lpVtbl->AddRef(This);
+
+	return(NOERROR);
+}
+
+ULONG STDMETHODCALLTYPE AddRef(IUIApplication *This)
+{
+	return(InterlockedIncrement(&OutstandingObjects));
+}
+
+ULONG STDMETHODCALLTYPE Release(IUIApplication *This)
+{
+	return InterlockedDecrement(&OutstandingObjects);
+}
+
+HRESULT STDMETHODCALLTYPE OnViewChanged(IUIApplication *This, UINT32 viewId, UI_VIEWTYPE typeID, IUnknown *view, UI_VIEWVERB verb, INT32 uReasonCode)
+{ 
+	return E_NOTIMPL; 
+}
+
+HRESULT STDMETHODCALLTYPE OnCreateUICommand(IUIApplication *This, UINT32 commandId, UI_COMMANDTYPE typeID, IUICommandHandler **commandHandler)
+{ 
+	return E_NOTIMPL; 
+}
+
+HRESULT STDMETHODCALLTYPE OnDestroyUICommand (IUIApplication *This, UINT32 commandId,  UI_COMMANDTYPE typeID, IUICommandHandler *commandHandler) 
+{ 
+	return E_NOTIMPL; 
+}
+
+BOOL InitializeFramework(HWND hWnd)
+{
+	HRESULT			hr;
+
+	hr = CoCreateInstance(CLSID_UIRibbonFramework, NULL, CLSCTX_INPROC_SERVER, IID_IUIFRAMEWORK, (VOID **)&g_pFramework);
+	if (FAILED(hr)) {
+		return(FALSE);
+	}
+	else
+	{
+		IUIApplication	*pApplication = NULL;
+		VOID *ppvObj = NULL;
+
+		/* allocate pApplication */
+		pApplication = (IUIApplication *)GlobalAlloc(GMEM_FIXED, sizeof(IUIApplication));
+		if(!pApplication) {
+			return(FALSE);
+		}
+
+		/*	
+		Point our pApplication to myRibbon_Vtbl that contains standard IUnknown method (QueryInterface, AddRef, Release)
+		and callback for our IUIApplication interface (OnViewChanged, OnCreateUICommand, OnDestroyUICommand).
+		*/
+		*(IUIApplicationVtbl *)pApplication->lpVtbl = myRibbon_Vtbl;
+		hr = pApplication->lpVtbl->QueryInterface(pApplication, IID_IUIAPPLICATION, &ppvObj);
+
+		/* Connects the host application to ribbon framework */
+		hr = g_pFramework->lpVtbl->Initialize(g_pFramework, hWnd, (IUIApplication *)ppvObj);
+		if (FAILED(hr)) {
+			return(FALSE);
+		}
+		pApplication->lpVtbl->Release(pApplication);
+
+		/* 
+		LoadUI does the following: 
+		1. Load our compiled binary markup 
+		2. Initiate callbacks to the IUIApplication
+		3. Bind command handler(s)
+		*/
+		hr = g_pFramework->lpVtbl->LoadUI(g_pFramework, GetModuleHandle(NULL), L"APPLICATION_RIBBON");
+		if (FAILED(hr)) {
+			return(FALSE);
+		}
+
+	}
+	return(TRUE);
+
+}
+
+void DestroyRibbon()
+{
+	HRESULT hr;
+	if (g_pFramework)
+	{
+		/* release and destroy */
+		hr = ((IUIFramework *)g_pFramework)->lpVtbl->Destroy(g_pFramework);
+		g_pFramework = NULL;
+	}
+
+}
 
 // -----------------------------------------------------
 // paint colored application window.
@@ -284,14 +481,156 @@ dlgAboutProc(
 			return TRUE;
 		break;
 		case WM_COMMAND:
-			if (LOWORD(wParam) == IDOK
-			||  LOWORD(wParam) == IDCANCEL) {
-				EndDialog(hwnd, LOWORD(wParam));
-				return TRUE;
+			switch (LOWORD(wParam)) {
+				case IDOK:
+					EndDialog(hwnd, IDOK);
+				break;				
 			}
 		break;
+		default:
+			return FALSE;
+		break;
 	}
-	return 0;
+	return TRUE;
+}
+
+void
+OnInitMenuPopup(
+	HMENU hMenu)
+{
+    // We must ensure that NONE or ALL menu items are MF_OWNERDRAW.
+    // Otherwise we can't ensure the shortcuts are displayed correctly.
+    UINT  nSysDrawn = 0;
+    UINT  nOwnerDrawn = 0;
+
+    if (hMenu != NULL)
+    {
+        int nMaxItem = ::GetMenuItemCount(hMenu);
+
+        // Check whether menu items must upgraded to MF_OWNERDRAW.
+        for (int nItemIdx = 0; nItemIdx < nMaxItem; nItemIdx++)
+        {
+            MENUITEMINFO    mii;
+            memset(&mii, 0, sizeof(MENUITEMINFO));
+            mii.cbSize = sizeof(MENUITEMINFO);
+            mii.fMask = MIIM_STATE | MIIM_TYPE;
+            GetMenuItemInfo(hMenu, nItemIdx, TRUE, &mii);
+
+            if ((mii.fType & MFT_SEPARATOR) != MFT_SEPARATOR)
+            {
+                if ((mii.fType & MF_OWNERDRAW) != MF_OWNERDRAW)
+                    nSysDrawn++;
+                else
+                    nOwnerDrawn++;
+            }
+        }
+
+        // Upgrade menu items to MF_OWNERDRAW.
+        for (int nItemIdx = 0;
+             nOwnerDrawn != 0 && nSysDrawn != 0 && nItemIdx < nMaxItem; nItemIdx++)
+        {
+            MENUITEMINFO    mii;
+            memset(&mii, 0, sizeof(MENUITEMINFO));
+            mii.cbSize = sizeof(MENUITEMINFO);
+            mii.fMask = MIIM_STATE | MIIM_TYPE;
+            GetMenuItemInfo(hMenu, nItemIdx, TRUE, &mii);
+
+            if ((mii.fType & MFT_SEPARATOR) != MFT_SEPARATOR)
+            {
+                if ((mii.fType & MF_OWNERDRAW) != MF_OWNERDRAW)
+                {
+                    int nItemID = ::GetMenuItemID(hMenu, nItemIdx);
+                    ::ModifyMenu(hMenu, nItemIdx, mii.fState | MF_BYPOSITION | MF_OWNERDRAW,
+                                 nItemID, NULL);
+                }
+            }
+        }
+    }
+}
+
+LRESULT CALLBACK
+richEditWindowProc(
+	HWND hwnd,
+	UINT msg,
+	WPARAM wParam,
+	LPARAM lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+	switch (msg) {
+		case WM_PAINT:
+			hdc = BeginPaint(hwnd, &ps);
+			{
+				HBRUSH brush = CreateSolidBrush(RGB(0, 0, 255));
+				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)brush);
+				DeleteObject(brush);
+			}
+			EndPaint(hwnd, &ps);
+		default:
+		break;
+	}
+	return TRUE;
+}
+
+int
+CreateRichEdit(
+	int x, int y,          // Location
+	int width, int height) // Dimensions
+{
+    LoadLibrary(TEXT("Msftedit.dll"));
+    
+    hwndEdit = CreateWindowEx(0,
+		_T("EDIT"),
+		TEXT("Type here"),
+        ES_MULTILINE | WS_VISIBLE | WS_CHILD | WS_BORDER | WS_TABSTOP , 
+        74, 74, 100,100,
+        hWindow,
+		NULL, hInst, NULL);
+
+	HFONT editFont = CreateFont (
+		12, 8,					// height/width
+		 0, 0,
+		FW_NORMAL,				// weight
+		FALSE,					// italic ?
+		FALSE,					// Underline ?
+		FALSE,					// strikeout ?
+		ANSI_CHARSET,
+		OUT_RASTER_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		FIXED_PITCH,
+		"System");
+
+    SendMessage(hwndEdit, WM_SETFONT, WPARAM (editFont), TRUE);
+	
+	HDC dc = GetWindowDC(hwndEdit);
+	SelectObject(dc, editFont);
+	RECT rect = { 0,0,0,0 };
+	DrawText(dc, "@", 1, &rect,
+		DT_CALCRECT |
+		DT_NOPREFIX |
+		DT_SINGLELINE);
+		
+	int textW = abs(rect.right  - rect.left);
+	int textH = abs(rect.bottom - rect.top );
+	
+	editRect.right  = textW * (80 + 1);
+	editRect.bottom = textH * (25 + 1);
+	editRect.top    = 56;
+	editRect.left   = 104;
+	
+	DeleteDC(dc);
+	SetWindowPos(hwndEdit,HWND_TOP,
+	editRect.left,
+	editRect.top,
+	editRect.right,
+	editRect.bottom,
+	SWP_SHOWWINDOW);
+
+	UpdateWindow(hwndEdit);
+	ShowWindow(hwndEdit,SW_SHOWNORMAL);
+	
+    return 0;
 }
 
 // -----------------------------------------------------
@@ -311,11 +650,15 @@ WndProc(
 	
 	if (IsHandledMessage(msg))
 		skinWndProc(hwnd, msg, wParam, lParam);
-	
+	if (!InitializeFramework(hwnd))
+				return FALSE;
 	switch (msg) {
 		case WM_INITDIALOG:
-			//SetWindowSubclass(windowPanel, subWndProc, windowPanelID, 0);
-			return TRUE;
+			SetCapture(hwnd);
+		break;
+		case WM_CTLCOLORSTATIC:
+			SetBkMode((HDC)wParam, TRANSPARENT);
+			return (LRESULT)CreateHatchBrush(HS_HORIZONTAL, RGB(255, 0, 0));
 		break;
 		case WM_CLOSE:
 			DestroyWindow(hwnd);
@@ -323,56 +666,55 @@ WndProc(
 		break;
 		case WM_DESTROY:
 			//RemoveWindowSubclass(windowPanel, subWndProc, windowPanelID);
+			DestroyRibbon();
 			PostQuitMessage(0);
 			return FALSE;
 		break;
 		case WM_COMMAND:
-			wmID    = LOWORD(wParam);
-			wmEvent = HIWORD(wParam);
-			switch (wmID) {
-				case IDM_ABOUT:
-					DialogBox(hInst, (LPCTSTR)IDD_ABOUTBOX, hwnd, (DLGPROC)dlgAboutProc);
+			int wmId, wmEvent;
+			wmId    = LOWORD(wParam); 
+			wmEvent = HIWORD(wParam); 
+			switch (wmId)
+			{
+				case ID_FILE_EXIT:
 				break;
-				case IDM_EXIT:
-					DestroyWindow(hwnd);
-				break;
-				default:
-					return DefWindowProc(hwnd, msg, wParam, lParam);
+				case ID_HELP_ABOUT:
 				break;
 			}
 			return TRUE;
 		break;
 		case WM_NCACTIVATE:
 		case WM_SHOWWINDOW:
-			OnNcPaint(hWnd, message, wParam, lParam);
+		case WM_WINDOWPOSCHANGING:
+		case WM_SIZE:
+		case WM_NCRBUTTONDOWN:
+		case WM_NCLBUTTONUP:
+		case WM_NCMOUSEMOVE:
+		case WM_NCPAINT:
+		{
+			RECT rect;
+			GetWindowRect(hwnd, &rect);
+			newWindowRectHeight = rect.bottom;
+			newWindowRectWidth  = rect.right;
+			
+			OnNcPaint(hwnd, msg, wParam, lParam);
+			return 0;
+		}
+		break;
+		case WM_MOUSEMOVE:
+		case WM_MOUSEHOVER:
+			RECT rect;
+			GetWindowRect(hwnd, &rect);
+			newWindowRectHeight = rect.bottom;
+			newWindowRectWidth  = rect.right;
+			
+			menuDrawer = 0;
+			OnNcPaint(hwnd, msg, wParam, lParam);
 			return 0;
 		break;
 		case WM_PAINT:
 			hdc = BeginPaint(hwnd, &ps);
 			{
-				// right bottom border
-				RECT rect;
-				GetWindowRect(hWindow, &rect);
-				
-				SelectObject  (hdc, GetStockObject(DC_PEN));
-				SetDCPenColor (hdc, RGB(0,0,200));
-				
-				HPEN pen = CreatePen(PS_SOLID, 3, RGB(0,0,200));
-				SelectObject(hdc, pen);
-				
-				// maximized
-				if (m_winstate == 1) {
-					Rectangle(hdc, 0,0,
-						rect.right,
-						rect.bottom);
-				}
-				// notmal
-				else {
-					Rectangle(hdc, 0,0,
-						newWindowRectWidth,
-						newWindowRectHeight);
-				}
-				DeleteObject(pen);
 			}
 			EndPaint(hwnd, &ps);
 		break;
@@ -398,13 +740,16 @@ WinMain(
 	MSG msg;
 	HACCEL hAccelTable;
 	
+	if (CoInitialize(0))
+		return FALSE;
+	
 	// resource strings:
 	LoadString(hInstance, IDS_APP_TITLE, szTitle,     MAX_LOADSTRING);
 	LoadString(hInstance, IDC_DOSWINDOW, szClassName, MAX_LOADSTRING);
 	
 	// register the window class:
 	wc.cbSize		 = sizeof(WNDCLASSEX);
-	wc.style		 = 0;
+	wc.style		 = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc	 = (WNDPROC) WndProc;
 	wc.cbClsExtra	 = 0;
 	wc.cbWndExtra	 = 0;
@@ -412,7 +757,7 @@ WinMain(
 	wc.hIcon		 = LoadIcon(hInstance, (LPCSTR) IDC_DOSWINDOW);
 	wc.hCursor	 	 = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(0,0,0));
-	wc.lpszMenuName  = nullptr;
+	wc.lpszMenuName  = 0; //MAKEINTRESOURCE(IDR_MainMenu);
 	wc.lpszClassName = szClassName;
 	wc.hIconSm		 = LoadIcon(nullptr, IDI_APPLICATION);
 	
@@ -427,9 +772,10 @@ WinMain(
 	newWindowRectWidth  = 400;
 	newWindowRectHeight = 400;
 	
+	hInst = hInstance;
+	
 	// create the window:
-	if (!(hwnd = CreateWindowEx(
-		0,
+	if (!(hwnd = CreateWindow(
 		szClassName,
 		szTitle,
 		WS_OVERLAPPEDWINDOW,
@@ -442,14 +788,21 @@ WinMain(
 			"Window Creation Failed!",
 			"Error",
 			MB_ICONEXCLAMATION | MB_OK);
-		return 1;
+		return FALSE;
 	}
-	
-	hWindow  = hwnd;
-	IsActive = TRUE;
 	
 	InitCommonControls();
 	
+	hAccelTable = LoadAccelerators(
+		hInstance,
+		(LPCTSTR)IDC_DOSWINDOW);
+		
+	hWindow  = hwnd;
+	IsActive = FALSE;
+
+	// editor:
+	CreateRichEdit(30,30,100,100);
+
 	skinWinLoad(hInstance, hwnd);
 	
 	ShowWindow(hwnd, cmdshow);
@@ -462,6 +815,8 @@ WinMain(
 			DispatchMessage(&msg);
 		}
 	}
+
+	CoUninitialize();
 	
 	skinWinFree();
 	skinWinDTOR();
@@ -491,7 +846,7 @@ skinWinLoad(
 	HWND hWnd)
 {
 	m_hInst = hInst;
-	m_hWnd = hWnd;
+	m_hWnd  = hWnd;
 
 	HDC WindowDC = GetWindowDC(hWnd);
 	
@@ -797,8 +1152,19 @@ OnNcPaint(
 	m_MemBitmap = CreateCompatibleBitmap(WindowDC, width, height);
 	m_OldMemBitmap = (HBITMAP)SelectObject(m_MemDC, m_MemBitmap);
 
+	// [start] paule32: set background color
+	RECT r;
+	r.left   = r.top = 0;
+	r.right  = width;
+	r.bottom = height;
+	
+	HBRUSH hBrush = CreateSolidBrush(RGB(200,200,100));
+	FillRect(m_MemDC, &r, hBrush);
+	DeleteObject(hBrush);
+	// [end] paule32
+
 	int state = (IsActive==TRUE) ? 0 : 1;
-	DrawFrame(m_MemDC, 0, 0, width, height, 1);
+	DrawFrame(m_MemDC, 0, 0, width, height, state);
 
 	//draw caption buttons
 	DrawButton ( m_MemDC, 0, 0 ); // close button
@@ -819,27 +1185,147 @@ OnNcPaint(
 		DrawIconEx( m_MemDC, 10, 5, hi/*(HICON)CopyImage( hi, IMAGE_ICON, cx, cy, 0)*/,
 		cx, cy, 0, 0, DI_NORMAL);
 
-	//draw text
-	if(!WindowText) WindowText = (char*)malloc(sizeof(char)*255);
+	// draw title-bar text:
+	if (!WindowText)
+		 WindowText = (char*)malloc(sizeof(char)*255);
 	int len = GetWindowText(m_hWnd, WindowText, 255);
 
 	RECT textRect;
-	textRect.left = 30;
-	textRect.top = 0;
+	textRect.left = 32;
+	textRect.top = 4;
 	textRect.right = width - bmpTop.bmWidth + 40;
 	textRect.bottom = BorderTopHeight;
 
 	SetBkMode(m_MemDC, TRANSPARENT);
-	SetTextColor(m_MemDC, IsActive ? RGB(255,255,255) : RGB(0, 0, 0));
-
+	
+	SetTextColor(m_MemDC, RGB(0, 0, 0));
+	m_hOldFont = (HFONT)SelectObject(m_MemDC, m_hFont);
+	DrawText(m_MemDC, WindowText, len, &textRect, DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_WORD_ELLIPSIS);
+	SelectObject(m_MemDC, m_hOldFont);
+	
+	textRect.left = 31;
+	textRect.top = 3;
+	SetTextColor(m_MemDC, RGB(255,255,255) );
 	m_hOldFont = (HFONT)SelectObject(m_MemDC, m_hFont);
 	DrawText(m_MemDC, WindowText, len, &textRect, DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_WORD_ELLIPSIS);
 	SelectObject(m_MemDC, m_hOldFont);
 
-	BitBlt(WindowDC, 0, 0, width, height, m_MemDC, 0, 0, SRCCOPY);
-	SelectClipRgn(WindowDC, NULL);
 
-	ReleaseDC(hWnd, WindowDC);
+	// draw menu-bar:
+	PAINTSTRUCT ps;
+	HDC paintDC = m_MemDC;
+
+	int menu_height = 60;
+	int menu_width  = width;
+		
+	SelectObject  (paintDC, GetStockObject(DC_PEN));
+	SetDCPenColor (paintDC, RGB(0,0,200));
+		
+	HPEN pen = CreatePen(PS_SOLID, 3, RGB(0,110,200));
+	SelectObject(paintDC, pen);
+		
+	HBRUSH brush = CreateSolidBrush(RGB(100,10,200));
+	SelectObject(paintDC, brush);
+		
+	Rectangle(paintDC,
+		3, 30,
+		menu_width + 1,
+		menu_height);
+
+	Rectangle(paintDC,  10, 34,  80, 54);
+	Rectangle(paintDC,  84, 34, 154, 54);
+	Rectangle(paintDC, 158, 34, 228, 54);
+
+	DeleteObject(brush);
+	DeleteObject(pen);
+
+	pen = CreatePen(PS_SOLID,2,RGB(200,200,200));
+	SelectObject(paintDC,pen);
+	
+	brush = CreateSolidBrush(RGB(100,10,200));
+	SelectObject(paintDC, brush);
+	SelectObject(paintDC, m_hFont);
+	
+	switch (menuDrawer) {
+		case 1:
+			Rectangle(paintDC,  10, 34 ,  80, 54);
+		break;
+		case 2:
+			Rectangle(paintDC,  84, 34 , 154, 54);
+		break;
+		case 3:
+			Rectangle(paintDC, 164, 34 , 228, 54);
+		break;
+	}
+	
+	textRect.left = 25;
+	textRect.top  = 58;
+	SetTextColor(m_MemDC, RGB(0,0,0));
+	DrawText(m_MemDC, "File", 4, &textRect,
+	DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_WORD_ELLIPSIS);
+	
+	textRect.left = 24;
+	textRect.top  = 57;
+	SetTextColor(m_MemDC, RGB(255,255,255));
+	DrawText(m_MemDC, "File", 4, &textRect,
+	DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_WORD_ELLIPSIS);
+	DeleteObject(brush);
+	DeleteObject(pen);
+
+	// ------- //
+	textRect.left = 92;
+	textRect.top  = 58;
+	SetTextColor(m_MemDC, RGB(0,0,0));
+	DrawText(m_MemDC, "Edit", 4, &textRect,
+	DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_WORD_ELLIPSIS);
+	
+	textRect.left = 91;
+	textRect.top  = 57;
+	SetTextColor(m_MemDC, RGB(255,255,255) );
+	DrawText(m_MemDC, "Edit", 4, &textRect,
+	DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_WORD_ELLIPSIS);
+
+	// ------- //
+	textRect.left = 168;
+	textRect.top  = 58;
+	SetTextColor(m_MemDC, RGB(0,0,0));
+	DrawText(m_MemDC, "Settings", 8, &textRect,
+	DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_WORD_ELLIPSIS);
+	
+	textRect.left = 167;
+	textRect.top  = 57;
+	SetTextColor(m_MemDC, RGB(255,255,255) );
+	DrawText(m_MemDC, "Settings", 8, &textRect,
+	DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_WORD_ELLIPSIS);
+
+
+	// edit box:
+	RECT rect;
+	GetClientRect (hWindow, &rect);
+	
+	pen = CreatePen(PS_SOLID,1,RGB(0,0,0));
+	SelectObject(paintDC,pen);
+	brush = CreateSolidBrush(RGB(255,255,255));
+	SelectObject(paintDC, brush);
+	Rectangle(paintDC,
+		    editRect.left   +  10,
+			editRect.top    +  60,
+			editRect.right  + 116,
+			editRect.bottom + 120);
+	
+	// status-bar:
+	Rectangle(paintDC,
+                    2, rect.bottom + 70,
+		rect.right+20, rect.bottom + 42);
+		
+	DeleteObject(brush);
+	DeleteObject(pen);
+	
+	
+	// bring all together:
+	BitBlt(WindowDC, 0,0, width, height,   m_MemDC,  0, 0, SRCCOPY);
+	SelectClipRgn(WindowDC, NULL);
+	ReleaseDC(hWnd, WindowDC);		
 }
 
 void
@@ -886,7 +1372,7 @@ UINT OnNcHitTest(
 	UINT message,
 	WPARAM wParam,
 	LPARAM lParam)
-{	
+{
 	POINT point;
 	point.x = LOWORD(lParam);
 	point.y = HIWORD(lParam);
@@ -1023,7 +1509,7 @@ OnNcLButtonDown(
 		}	else
 		
 		// close
-		if ((ButtonX >= 15) && (ButtonX <= 34)) {
+		if ((ButtonX >= 15) && (ButtonX <= 30)) {
 			m_mousedown = HTCLOSE;
 			return;
 		}
@@ -1067,6 +1553,32 @@ OnNcMouseMove(
 	WPARAM wParam,
 	LPARAM lParam)
 {
+	// menubar items:
+	POINT point;
+	point.x = LOWORD(lParam);
+	point.y = HIWORD(lParam);
+
+	RECT rect;
+	GetWindowRect(hWnd, &rect);
+
+	int width  = rect.right  - rect.left;
+	int height = rect.bottom - rect.top;
+
+	menuDrawer = 0;
+	if ((point.y >= rect.top + 32) && (point.y <= rect.top + 78)) {
+		if ((point.x >= rect.left + 10) && (point.x <= rect.left + 64 + 10)) {
+			menuDrawer = 1;
+			//SendMessage(hWnd,WM_NCPAINT,wParam,lParam);
+		}	else
+		if ((point.x >= rect.left + 84) && (point.x <= rect.left + 84 + 74)) {
+			menuDrawer = 2;
+		}	else
+		if ((point.x >= rect.left + 84 + 74) && (point.x <= rect.left + 84 + 144)) {
+			menuDrawer = 3;
+		}
+	}
+
+	// title-bar:
 	if ( wParam >= HTLEFT && wParam <= HTBOTTOMRIGHT || 
 		 wParam == HTCAPTION && m_winstate != 1 )  //!IsZoomed(m_hWnd) )
 		DefWindowProc(hWnd, message, wParam, lParam);
@@ -1138,7 +1650,7 @@ OnSize(
 	RECT rect;
 	GetWindowRect(hWnd, &rect);
 
-	InvalidateRect(hWnd, NULL, TRUE);
+	//InvalidateRect(hWnd, NULL, FALSE);
 	OnNcPaint(hWnd, message, wParam, lParam);
 
 	if ( m_bTrans ) {
@@ -1864,6 +2376,8 @@ MaximizeWindow()
 	m_winstate = 1;
 	MoveWindow( m_hWnd, r.left, r.top, r.right-r.left, r.bottom-r.top, TRUE  );
 	UpdateWindow( m_hWnd );
+	
+	InvalidateRect(hwndEdit, NULL, TRUE);
 
 	IsActive = TRUE;
 	return TRUE;
@@ -1888,6 +2402,7 @@ RestoreWindow()
 			RestoreWinRect.right-RestoreWinRect.left, RestoreWinRect.bottom-RestoreWinRect.top, TRUE  );
 		m_winstate = 0;
 		UpdateWindow( m_hWnd );
+		InvalidateRect(hwndEdit, NULL, TRUE);
 	}
 
 	return TRUE;
@@ -2243,7 +2758,7 @@ TransparentBltA(
 
      SetBkColor(maskDC, RGB(0,0,0));
      SetTextColor(maskDC, RGB(255,255,255));
-     if (!BitBlt(maskDC, 0,0,nWidthSrc,nHeightSrc,NULL,0,0,BLACKNESS)) {
+     if (!BitBlt(maskDC, 0,0,nWidthSrc,nHeightSrc,NULL,0,0,WHITENESS)) {
          SelectObject(maskDC, oldMask); 
          DeleteObject(maskBitmap);      
          DeleteDC(maskDC);              

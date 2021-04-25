@@ -11,15 +11,15 @@
 IDI_DRAWWINDOW          ICON                    "favicon.ico"
 IDI_SMALL               ICON                    "small.ico"
 
-IDC_DRAWWINDOW MENU 
+IDR_MainMenu MENU 
 BEGIN
-    POPUP "Application"
+    POPUP "&File"
     BEGIN
-        MENUITEM "Exit",                    IDM_EXIT
+        MENUITEM "E&xit",                   ID_FILE_EXIT
     END
     POPUP "Help"
     BEGIN
-        MENUITEM "About ...",               IDM_ABOUT
+        MENUITEM "About ...",               ID_HELP_ABOUT
     END
 END
 
@@ -29,14 +29,14 @@ BEGIN
 END
 
 IDD_ABOUTBOX DIALOG  22, 17, 230, 75
-STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | WS_POPUP | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 9, "System"
 BEGIN
     ICON            IDI_DRAWWINDOW,IDC_MYICON,14,9,16,16
     LTEXT           "WinDOS Version 0.1",IDC_STATIC,49,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2021 paule32",IDC_STATIC,49,20,119,8
-    DEFPUSHBUTTON   "Ok.",IDOK,195,6,30,11,WS_GROUP
+    DEFPUSHBUTTON   "Ok.",IDOK,195,6,30,11
 END
 
 IDB_LEFT                BITMAP                  "left.bmp"
